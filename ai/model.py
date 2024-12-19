@@ -2,6 +2,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from helper import singleton
+from langsmith import traceable
 from .vector import VectorDB
 
 load_dotenv()
@@ -19,6 +20,7 @@ class Model:
         }
         self.vector_db = VectorDB()
 
+    @traceable
     def chat(self, content):
         response = requests.post(self.ENDPOINT_URL, headers=self.headers, json={
             "messages": [{
@@ -32,21 +34,29 @@ class Model:
         })
         return response.json()['choices'][0]["message"]["content"]
 
+    @traceable
     def rag(self, query, domain):
         content = self.vector_db.search(query, domain)
         content = " ".join(content)
 
         template = f"""
         Document:
-        \n --- \n {content} \n --- \n
+        ---
+        {content}
+        ---
+
         Question:
-        \n --- \n {query} \n --- \n
+        ---
+        {query}
+        ---
+
         Instructions:
-        \n --- \n
-        Answer the users QUESTION using the DOCUMENT text above.
-        Keep your answer ground in the facts of the DOCUMENT.
-        If the DOCUMENT doesn’t contain the facts to answer the QUESTION return NONE
-        \n --- \n
+        ---
+        Answer the QUESTION using only the information in the DOCUMENT. 
+        - Provide a direct, factual answer with no additional context or prefacing phrases.
+        - If the DOCUMENT does not contain the necessary information to answer the QUESTION, return NONE.
+        - Dont use the word DOCUMENT, QUESTION in your answer.
+        ---
         """
 
         answer = self.chat(template)
