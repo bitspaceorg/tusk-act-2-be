@@ -1,4 +1,3 @@
-import uuid
 from flask_cors import CORS
 from utils.parseHtml import parse_html
 from flask import Blueprint, json, jsonify, request
@@ -21,7 +20,6 @@ def ingest_data():
     data = {
             "domain": data["domain"],
             "content": parse_html(data["content"]),
-            "id": str(uuid.uuid4())
            }
     db = VectorDB()
     db.add(data)
