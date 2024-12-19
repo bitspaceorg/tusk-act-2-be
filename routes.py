@@ -1,3 +1,4 @@
+import uuid
 from flask_cors import CORS
 from utils.parseHtml import parse_html
 from flask import Blueprint, json, jsonify, request
@@ -14,18 +15,14 @@ def test():
     return jsonify({'message': 'Hello, World!'})
 
 
-@blueprint.route('/parse', methods=['POST'])
-def parseHtml():
-    data = request.get_json()
-    f = open("parse.out", 'w')
-    f.write(parse_html(data["html"]))
-    f.close()
-    return jsonify({'message': 'parse route!!!'})
-
-
 @blueprint.route('/ingest', methods=['POST'])
 def ingest_data():
     data = json.loads(request.data)
+    data = {
+            "domain": data["domain"],
+            "content": parse_html(data["content"]),
+            "id": str(uuid.uuid4())
+           }
     db = VectorDB()
     db.add(data)
     return jsonify({'message': 'Data ingested successfully'})
