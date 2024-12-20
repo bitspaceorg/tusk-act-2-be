@@ -32,6 +32,7 @@ class Model:
                 "max_new_tokens": 400
             }
         })
+        print(response.json())
         return response.json()['choices'][0]["message"]["content"]
 
     @traceable
@@ -52,7 +53,7 @@ class Model:
 
         Instructions:
         ---
-        Answer the QUESTION using only the information in the DOCUMENT. 
+        Answer the QUESTION using only the information in the DOCUMENT.
         - Provide a direct, factual answer with no additional context or prefacing phrases.
         - If the DOCUMENT does not contain the necessary information to answer the QUESTION, return NONE.
         - Dont use the word DOCUMENT, QUESTION in your answer.
