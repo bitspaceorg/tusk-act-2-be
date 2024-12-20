@@ -36,7 +36,7 @@ class VectorDB:
 
     @traceable
     def search(self, query, domain):
-        response = self.search_client.search(search_text=query, filter="domain eq '{}'".format(domain))
+        response = self.search_client.search(search_text=query, top=5, filter="domain eq '{}'".format(domain))
         data = [result["content"] for result in response]
         return data
 
@@ -54,4 +54,4 @@ class VectorDB:
             doc["content_vector"] = vector
             documents.append(doc)
 
-        self.search_client.upload_documents(documents=[docs])
+        self.search_client.upload_documents(documents=documents)
