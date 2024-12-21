@@ -32,7 +32,6 @@ class Model:
                 "max_new_tokens": 400
             }
         })
-        print(response.json())
         return response.json()['choices'][0]["message"]["content"]
 
     @traceable
